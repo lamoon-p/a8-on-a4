@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23fff'/%3E%3Cg fill='%23111'%3E%3Crect x='1' y='1' width='6' height='6'/%3E%3Crect x='9' y='1' width='6' height='6'/%3E%3Crect x='1' y='9' width='6' height='6'/%3E%3Crect x='9' y='9' width='6' height='6'/%3E%3C/g%3E%3C/svg%3E">
+<title>A8 on A4 — tile QR pages for printing</title>
+<style>
+  :root { color-scheme: light dark; --fg:#111; --bg:#fafafa; --card:#fff; --line:#d8d8d8; --dim:#666; --accent:#1a5fb4; --bad:#b3261e; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e8e8e8; --bg:#141414; --card:#1e1e1e; --line:#3a3a3a; --dim:#9a9a9a; --accent:#78aeff; --bad:#f2b8b5; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:2rem 1rem 4rem; background:var(--bg); color:var(--fg);
+         font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width: 46rem; margin: 0 auto; }
+  h1 { font-size:1.5rem; margin:0 0 .25rem; }
+  .sub { color:var(--dim); margin:0 0 1.75rem; }
+  #drop { border:2px dashed var(--line); border-radius:12px; background:var(--card);
+          padding:2.5rem 1rem; text-align:center; cursor:pointer; transition:border-color .15s,background .15s; }
+  #drop.over { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 8%, var(--card)); }
+  #drop b { display:block; font-size:1.05rem; }
+  #drop span { color:var(--dim); font-size:.9rem; }
+  #count { margin:1.25rem 0 .5rem; font-weight:600; }
+  ul { list-style:none; margin:0 0 1rem; padding:0; max-height:16rem; overflow:auto;
+       border:1px solid var(--line); border-radius:8px; background:var(--card); }
+  ul:empty { display:none; }
+  li { padding:.35rem .7rem; font-size:.85rem; border-bottom:1px solid var(--line);
+       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  li:last-child { border-bottom:0; }
+  li.bad { color:var(--bad); }
+  #warn { border:1px solid var(--bad); border-radius:8px; padding:.7rem .9rem; margin-bottom:1rem;
+          font-size:.85rem; color:var(--bad); background:var(--card); }
+  .row { display:flex; gap:.6rem; align-items:center; }
+  button { font:inherit; padding:.6rem 1.2rem; border-radius:8px; border:1px solid var(--line);
+           background:var(--card); color:var(--fg); cursor:pointer; }
+  button#go { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button:disabled { opacity:.45; cursor:default; }
+  #status { color:var(--dim); font-size:.9rem; }
+  details { margin-top:2.5rem; font-size:.9rem; color:var(--dim); }
+  summary { cursor:pointer; color:var(--fg); }
+  details p { margin:.7rem 0; }
+  code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.85em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>A8 on A4</h1>
+  <p class="sub">Drop A4 PDFs, get one sheet with 16 of them per page, ready to print and cut.
+     Nothing is uploaded — the PDFs never leave this tab.</p>
+
+  <div id="drop">
+    <b>Drop PDFs here</b>
+    <span>or click to choose — one page becomes one cell</span>
+  </div>
+  <input id="file" type="file" accept="application/pdf,.pdf" multiple hidden>
+
+  <p id="count">Nothing loaded yet.</p>
+  <div id="warn" hidden></div>
+  <ul id="list"></ul>
+
+  <div class="row">
+    <button id="go" disabled>Make the sheet</button>
+    <button id="clear">Clear</button>
+    <span id="status"></span>
+  </div>
+
+  <details>
+    <summary>What it does, exactly</summary>
+    <p>Each page you drop is scaled to <strong>23.81%</strong> and placed in one cell of a 4×4 grid,
+       left to right and top to bottom. Sixteen cells fill an A4 sheet; leftover cells are left blank
+       at the end of the last sheet. Pages are placed as pages, not as pictures, so nothing is
+       re-rendered and no quality is lost.</p>
+    <p>The grid is inset <strong>5 mm</strong> from the paper edge so ordinary printers do not clip
+       the outer codes. That makes each cell <strong>50 × 71.75 mm</strong> rather than a true A8 of
+       52 × 74 mm. <strong>Print at 100% / actual size</strong> — "fit to page" will shrink it again.</p>
+    <p>A hairline grey line marks every cut. A page that is not A4 portrait still gets placed —
+       fitted and centred in its cell — and is named in a warning above.</p>
+    <p>Small text on the source page shrinks to a quarter of its size and may stop being readable.
+       Check the sheet before printing a hundred of them.</p>
+  </details>
+</main>
+
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="lib.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
